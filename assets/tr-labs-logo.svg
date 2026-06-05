@@ -1,0 +1,24 @@
+<svg width="960" height="320" viewBox="0 0 960 320" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">TR Labs logo</title>
+  <desc id="desc">Minimalist geometric TR Labs logo with a precisely aligned TR monogram and modern wordmark.</desc>
+  <g transform="translate(64 64)">
+    <g aria-hidden="true">
+      <rect x="0" y="0" width="104" height="16" rx="8" fill="#111827"/>
+      <rect x="44" y="16" width="16" height="112" rx="8" fill="#111827"/>
+
+      <rect x="136" y="0" width="16" height="128" rx="8" fill="#111827"/>
+      <rect x="136" y="0" width="72" height="16" rx="8" fill="#111827"/>
+      <rect x="192" y="16" width="16" height="40" rx="8" fill="#111827"/>
+      <rect x="136" y="48" width="60" height="16" rx="8" fill="#111827"/>
+      <path d="M152 64L174.627 64C182.05 64 189.168 66.9482 194.418 72.198C199.667 77.4478 202.616 84.566 202.616 91.988V91.988L202.616 128H186.616V95.301C186.616 90.8606 184.852 86.6021 181.712 83.4622C178.572 80.3223 174.313 78.558 169.873 78.558H152V64Z" fill="#111827"/>
+      <rect x="204" y="0" width="12" height="12" rx="3" fill="#22D3EE"/>
+    </g>
+
+    <g transform="translate(280 13)">
+      <text x="0" y="56" fill="#111827" font-family="IBM Plex Sans, Inter, Segoe UI, Arial, sans-serif" font-size="64" font-weight="700" letter-spacing="-0.04em">TR</text>
+      <text x="98" y="56" fill="#4B5563" font-family="IBM Plex Sans, Inter, Segoe UI, Arial, sans-serif" font-size="64" font-weight="500" letter-spacing="-0.03em">Labs</text>
+      <rect x="0" y="84" width="232" height="2" rx="1" fill="#E5E7EB"/>
+      <text x="0" y="118" fill="#6B7280" font-family="IBM Plex Sans, Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" letter-spacing="0.18em">SOFTWARE LAB</text>
+    </g>
+  </g>
+</svg>

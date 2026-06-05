@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: portfolio-contact-api
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+      - key: CONTACT_TO
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false

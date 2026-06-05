@@ -1,0 +1,15 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">TR Labs monogram</title>
+  <desc id="desc">Minimal geometric TR monogram for TR Labs designed on a strict grid.</desc>
+  <g transform="translate(96 96)">
+    <rect x="0" y="0" width="136" height="20" rx="10" fill="#111827"/>
+    <rect x="58" y="20" width="20" height="160" rx="10" fill="#111827"/>
+
+    <rect x="176" y="0" width="20" height="180" rx="10" fill="#111827"/>
+    <rect x="176" y="0" width="96" height="20" rx="10" fill="#111827"/>
+    <rect x="252" y="20" width="20" height="56" rx="10" fill="#111827"/>
+    <rect x="176" y="68" width="80" height="20" rx="10" fill="#111827"/>
+    <path d="M196 88H227.749C237.218 88 246.3 91.7616 252.996 98.4584C259.693 105.155 263.454 114.237 263.454 123.706V180H243.454V130.526C243.454 124.957 241.242 119.617 237.304 115.679C233.367 111.742 228.026 109.529 222.458 109.529H196V88Z" fill="#111827"/>
+    <rect x="276" y="0" width="16" height="16" rx="4" fill="#22D3EE"/>
+  </g>
+</svg>
