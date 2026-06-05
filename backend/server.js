@@ -1,16 +1,13 @@
 const express = require('express');
-const nodemailer = require('nodemailer');
 const cors = require('cors');
+const { Resend } = require('resend');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const EMAIL_USER = process.env.EMAIL_USER;
-const EMAIL_PASS = process.env.EMAIL_PASS;
-const SMTP_HOST = process.env.SMTP_HOST;
-const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
-const SMTP_SECURE = process.env.SMTP_SECURE === 'true';
-const CONTACT_TO = process.env.CONTACT_TO || EMAIL_USER;
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const RESEND_FROM = process.env.RESEND_FROM || 'TR Labs <onboarding@resend.dev>';
+const CONTACT_TO = process.env.CONTACT_TO;
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '')
     .split(',')
     .map((origin) => origin.trim())
@@ -30,33 +27,15 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const createTransporter = () => {
-    if (!EMAIL_USER || !EMAIL_PASS) {
+const createResendClient = () => {
+    if (!RESEND_API_KEY) {
         return null;
     }
 
-    if (SMTP_HOST) {
-        return nodemailer.createTransport({
-            host: SMTP_HOST,
-            port: SMTP_PORT,
-            secure: SMTP_SECURE,
-            auth: {
-                user: EMAIL_USER,
-                pass: EMAIL_PASS
-            }
-        });
-    }
-
-    return nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: EMAIL_USER,
-            pass: EMAIL_PASS
-        }
-    });
+    return new Resend(RESEND_API_KEY);
 };
 
-const transporter = createTransporter();
+const resend = createResendClient();
 
 const escapeHtml = (value = '') => value
     .replace(/&/g, '&amp;')
@@ -77,10 +56,10 @@ app.post('/api/contact', async (req, res) => {
         });
     }
 
-    if (!transporter || !CONTACT_TO) {
+    if (!resend || !CONTACT_TO || !RESEND_FROM) {
         return res.status(500).json({
             success: false,
-            message: 'Configuration email manquante sur le serveur'
+            message: 'Configuration Resend manquante sur le serveur'
         });
     }
 
@@ -89,9 +68,8 @@ app.post('/api/contact', async (req, res) => {
     const safeSubject = escapeHtml((subject || '').trim());
     const safeMessage = escapeHtml(message.trim());
 
-    // Configuration de l'email
-    const mailOptions = {
-        from: `"Portfolio TR Labs" <${EMAIL_USER}>`,
+    const emailPayload = {
+        from: RESEND_FROM,
         to: CONTACT_TO,
         replyTo: email,
         subject: subject || `Nouveau message de ${name} - Portfolio`,
@@ -125,7 +103,16 @@ ${message}
     };
 
     try {
-        await transporter.sendMail(mailOptions);
+        const { error } = await resend.emails.send(emailPayload);
+
+        if (error) {
+            console.error('Erreur envoi email Resend:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Erreur lors de l\'envoi du message'
+            });
+        }
+
         console.log(`Email envoye de ${name} (${email})`);
         res.json({
             success: true,
@@ -145,7 +132,8 @@ app.get('/api/health', (req, res) => {
     res.json({
         status: 'OK',
         message: 'Le serveur fonctionne!',
-        emailConfigured: Boolean(transporter && CONTACT_TO),
+        emailConfigured: Boolean(resend && CONTACT_TO && RESEND_FROM),
+        emailProvider: 'resend',
         allowedOrigins: ALLOWED_ORIGINS
     });
 });
@@ -154,17 +142,10 @@ app.get('/api/health', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Serveur demarre sur http://localhost:${PORT}`);
     console.log(`Test: http://localhost:${PORT}/api/health`);
-    if (!transporter || !CONTACT_TO) {
-        console.warn('Configuration email manquante: definissez EMAIL_USER et EMAIL_PASS.');
+    if (!resend || !CONTACT_TO || !RESEND_FROM) {
+        console.warn('Configuration email manquante: definissez RESEND_API_KEY, RESEND_FROM et CONTACT_TO.');
         return;
     }
 
-    transporter.verify((error) => {
-        if (error) {
-            console.error('Echec verification SMTP:', error.message);
-            return;
-        }
-
-        console.log(`Email configure: les messages seront envoyes vers ${CONTACT_TO}`);
-    });
+    console.log(`Email configure via Resend: les messages seront envoyes vers ${CONTACT_TO}`);
 });

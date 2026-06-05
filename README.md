@@ -33,9 +33,9 @@ cd portfolio
 Creer le fichier `.env` a la racine :
 
 ```bash
-EMAIL_USER=tommyramihoatrarivo@gmail.com
-EMAIL_PASS=votre_mot_de_passe_application
 CONTACT_TO=tommyramihoatrarivo@gmail.com
+RESEND_API_KEY=re_votre_cle_api
+RESEND_FROM=TR Labs <onboarding@resend.dev>
 ```
 
 ### 3. Lancer avec Docker Compose
@@ -52,15 +52,15 @@ Le portfolio sera accessible sur `http://localhost` (port 80)
 docker-compose down
 ```
 
-## Configuration Gmail
+## Configuration Resend
 
-Pour que le formulaire de contact fonctionne :
+Pour que le formulaire de contact fonctionne avec Render free :
 
-1. Activer la validation en 2 etapes sur Gmail
-2. Creer un mot de passe d'application :
-   - https://myaccount.google.com/apppasswords
-3. Utiliser ce mot de passe dans `.env`
-4. Laisser `EMAIL_USER` et `CONTACT_TO` sur votre adresse Gmail si vous voulez recevoir les messages sur cette meme boite
+1. Creer un compte sur `https://resend.com`
+2. Creer une API key
+3. Utiliser cette cle dans `RESEND_API_KEY`
+4. Pour un test rapide, utiliser `RESEND_FROM=TR Labs <onboarding@resend.dev>`
+5. Pour la production, verifier votre domaine dans Resend puis utiliser une adresse de ce domaine dans `RESEND_FROM`
 
 ## Developpement local
 
@@ -115,9 +115,9 @@ Actions a faire sur Render:
 3. definir les variables d'environnement:
 
 ```bash
-EMAIL_USER=tommyramihoatrarivo@gmail.com
-EMAIL_PASS=votre_mot_de_passe_application
 CONTACT_TO=tommyramihoatrarivo@gmail.com
+RESEND_API_KEY=re_votre_cle_api
+RESEND_FROM=TR Labs <onboarding@resend.dev>
 ALLOWED_ORIGINS=https://votre-compte.github.io
 ```
 

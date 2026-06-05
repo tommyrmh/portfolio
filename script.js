@@ -116,6 +116,7 @@ if (contactForm) {
         } catch (error) {
             console.error(error);
             button.textContent = error.message === "Configuration email manquante sur le serveur"
+                || error.message === "Configuration Resend manquante sur le serveur"
                 ? "Email non configure"
                 : error.message === "Failed to fetch"
                     ? "Backend inaccessible"
