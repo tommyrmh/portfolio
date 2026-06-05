@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const dns = require('node:dns').promises;
 const { Resend } = require('resend');
 require('dotenv').config();
 
@@ -44,15 +45,64 @@ const escapeHtml = (value = '') => value
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+
+const hasResolvableMailDomain = async (email) => {
+    const domain = email.split('@')[1]?.toLowerCase();
+
+    if (!domain) {
+        return false;
+    }
+
+    try {
+        const mxRecords = await dns.resolveMx(domain);
+        if (mxRecords && mxRecords.length > 0) {
+            return true;
+        }
+    } catch (error) {
+        // Fallback below
+    }
+
+    try {
+        const [aRecords, aaaaRecords] = await Promise.allSettled([
+            dns.resolve4(domain),
+            dns.resolve6(domain)
+        ]);
+
+        return (
+            (aRecords.status === 'fulfilled' && aRecords.value.length > 0)
+            || (aaaaRecords.status === 'fulfilled' && aaaaRecords.value.length > 0)
+        );
+    } catch (error) {
+        return false;
+    }
+};
+
 // Route pour envoyer un email
 app.post('/api/contact', async (req, res) => {
     const { name, email, subject, message } = req.body;
+    const normalizedEmail = (email || '').trim().toLowerCase();
 
-    // Validation
-    if (!name || !email || !message) {
+    if (!name || !normalizedEmail || !message) {
         return res.status(400).json({
             success: false,
             message: 'Veuillez remplir tous les champs requis'
+        });
+    }
+
+    if (!emailRegex.test(normalizedEmail)) {
+        return res.status(400).json({
+            success: false,
+            message: 'Le format de l\'adresse email est invalide.'
+        });
+    }
+
+    const emailDomainLooksValid = await hasResolvableMailDomain(normalizedEmail);
+
+    if (!emailDomainLooksValid) {
+        return res.status(400).json({
+            success: false,
+            message: 'Le domaine email semble invalide ou introuvable.'
         });
     }
 
@@ -64,18 +114,18 @@ app.post('/api/contact', async (req, res) => {
     }
 
     const safeName = escapeHtml(name.trim());
-    const safeEmail = escapeHtml(email.trim());
+    const safeEmail = escapeHtml(normalizedEmail);
     const safeSubject = escapeHtml((subject || '').trim());
     const safeMessage = escapeHtml(message.trim());
 
     const emailPayload = {
         from: RESEND_FROM,
         to: CONTACT_TO,
-        replyTo: email,
+        replyTo: normalizedEmail,
         subject: subject || `Nouveau message de ${name} - Portfolio`,
         text: `
 Nom: ${name}
-Email: ${email}
+Email: ${normalizedEmail}
 Sujet: ${subject || 'Non specifie'}
 
 Message:
